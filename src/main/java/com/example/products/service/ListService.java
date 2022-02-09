@@ -78,7 +78,7 @@ public class ListService {
     }
 
     private List getListById(Long id) throws NotFoundProductOrListException {
-        return listRepository.findById(id).orElseThrow(() -> new NotFoundProductOrListException("Корзины с данным id нет"));
+        return listRepository.findById(id).orElseThrow(() -> new NotFoundProductOrListException("List not found"));
     }
 
     private ListResponse createListResponse(List l) {

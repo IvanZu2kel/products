@@ -70,6 +70,6 @@ public class ProductService {
 
     private Product getProduct(Long id) throws NotFoundProductOrListException {
         return productRepository.findById(id)
-                .orElseThrow(() -> new NotFoundProductOrListException("Продукта с данным id нет"));
+                .orElseThrow(() -> new NotFoundProductOrListException("Product not found"));
     }
 }
