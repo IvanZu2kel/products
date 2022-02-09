@@ -2,9 +2,10 @@ package com.example.products.service;
 
 import com.example.products.api.request.ProductsIdRequest;
 import com.example.products.api.response.IdResponse;
-import com.example.products.api.response.list.ListListResponse;
+import com.example.products.api.response.DataResponse;
 import com.example.products.api.response.list.ListResponse;
 import com.example.products.api.response.product.ProductResponse;
+import com.example.products.exception.EmptyNameException;
 import com.example.products.exception.NotFoundProductOrListException;
 import com.example.products.model.List;
 import com.example.products.model.Product;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +24,18 @@ public class ListService {
     private final ListRepository listRepository;
     private final ProductRepository productRepository;
 
-    public ListListResponse getAllLists() {
-        java.util.List<List> allLists = listRepository.findAll();
-        java.util.List<ListResponse> listResponse = new ArrayList<>();
+    public DataResponse<ListResponse> getAllLists() {
+        Collection<List> allLists = listRepository.findAll();
+        Collection<ListResponse> listResponse = new ArrayList<>();
         for (List l : allLists) {
             listResponse.add(createListResponse(l));
         }
-        return new ListListResponse().setLists(listResponse);
+        return new DataResponse<ListResponse>().setData(listResponse);
     }
 
-    public ListResponse editList(String name) {
+    public ListResponse editList(String name) throws EmptyNameException {
+        Optional<List> optList = listRepository.findByName(name);
+        if (optList.isPresent() || name.trim().isEmpty()) throw new EmptyNameException();
         List list = new List()
                 .setName(name);
         List save = listRepository.save(list);
@@ -39,7 +44,9 @@ public class ListService {
                 .setName(save.getName());
     }
 
-    public ListResponse changeList(Long id, String name) throws NotFoundProductOrListException {
+    public ListResponse changeList(Long id, String name) throws NotFoundProductOrListException, EmptyNameException {
+        Optional<List> optList = listRepository.findByName(name);
+        if (optList.isPresent() || name.trim().isEmpty()) throw new EmptyNameException();
         List list = getListById(id);
         list.setName(name);
         List save = listRepository.save(list);
@@ -56,7 +63,7 @@ public class ListService {
 
     public ListResponse addedProductsOnList(Long id, ProductsIdRequest ids) throws NotFoundProductOrListException {
         List list = getListById(id);
-        java.util.List<Product> products = productRepository.findAllById(ids.getProductsIds());
+        Collection<Product> products = productRepository.findAllById(ids.getProductsIds());
         list.setProducts(products);
         List save = listRepository.save(list);
         return createListResponse(save);
@@ -64,14 +71,14 @@ public class ListService {
 
     public ListResponse deletedProductsOnList(Long id, ProductsIdRequest ids) throws NotFoundProductOrListException {
         List list = getListById(id);
-        java.util.List<Product> products = productRepository.findAllById(ids.getProductsIds());
+        Collection<Product> products = productRepository.findAllById(ids.getProductsIds());
         list.getProducts().removeAll(products);
         List save = listRepository.save(list);
         return createListResponse(save);
     }
 
     private List getListById(Long id) throws NotFoundProductOrListException {
-        return listRepository.findById(id).orElseThrow(NotFoundProductOrListException::new);
+        return listRepository.findById(id).orElseThrow(() -> new NotFoundProductOrListException("Корзины с данным id нет"));
     }
 
     private ListResponse createListResponse(List l) {
@@ -83,8 +90,8 @@ public class ListService {
                 .setAllKcal(reduce);
     }
 
-    private java.util.List<ProductResponse> getAllProducts(java.util.List<Product> products) {
-        java.util.List<ProductResponse> productResponses = new ArrayList<>();
+    private Collection<ProductResponse> getAllProducts(Collection<Product> products) {
+        Collection<ProductResponse> productResponses = new ArrayList<>();
         for (Product p : products) {
             productResponses.add(new ProductResponse()
                     .setId(p.getId())

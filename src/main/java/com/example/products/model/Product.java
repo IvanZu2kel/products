@@ -1,12 +1,10 @@
 package com.example.products.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -21,6 +19,7 @@ public class Product {
     private long id;
 
     @Column(name = "name")
+    @NonNull
     private String name;
 
     @Column(name = "description")
@@ -33,5 +32,5 @@ public class Product {
     @JoinTable(name = "list2product",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "list_id"))
-    private java.util.List<List> lists;
+    private Collection<List> lists;
 }

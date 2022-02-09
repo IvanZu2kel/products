@@ -1,8 +1,11 @@
 package com.example.products.controller;
 
 import com.example.products.api.request.ProductRequest;
+import com.example.products.api.response.DataResponse;
 import com.example.products.api.response.IdResponse;
-import com.example.products.api.response.product.ProductsListResponse;
+import com.example.products.api.response.list.ListResponse;
+import com.example.products.api.response.product.ProductResponse;
+import com.example.products.exception.EmptyNameException;
 import com.example.products.exception.NotFoundProductOrListException;
 import com.example.products.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,13 +24,13 @@ public class ProductsController {
 
     @Operation(summary = "Получение всех продуктов")
     @GetMapping
-    public ResponseEntity<ProductsListResponse> getAllProducts() {
+    public ResponseEntity<DataResponse<ProductResponse>> getAllProducts() {
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @Operation(summary = "Добавление продукта")
     @PostMapping
-    public ResponseEntity<IdResponse> editProduct(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<IdResponse> editProduct(@RequestBody ProductRequest productRequest) throws EmptyNameException {
         return new ResponseEntity<>(productService.editProduct(productRequest), HttpStatus.OK);
     }
 

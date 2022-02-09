@@ -5,6 +5,7 @@ import com.example.products.model.Product;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -12,6 +13,6 @@ import java.util.List;
 public class ListResponse {
     private long id;
     private String name;
-    private List<ProductResponse> products;
+    private Collection<ProductResponse> products;
     private int allKcal;
 }

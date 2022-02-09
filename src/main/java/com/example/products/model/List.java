@@ -1,9 +1,6 @@
 package com.example.products.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -22,13 +19,12 @@ public class List {
     private long id;
 
     @Column(name = "name")
+    @NonNull
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "list2product",
             joinColumns = @JoinColumn(name = "list_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private java.util.List<Product> products;
-    @OneToMany(mappedBy = "lists")
-    private Collection<Product> product;
+    private Collection<Product> products;
 }
