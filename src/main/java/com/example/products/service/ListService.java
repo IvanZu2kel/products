@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -64,7 +65,13 @@ public class ListService {
     public ListResponse addedProductsOnList(Long id, ProductsIdRequest ids) throws NotFoundProductOrListException {
         List list = getListById(id);
         Collection<Product> products = productRepository.findAllById(ids.getProductsIds());
-        list.setProducts(products);
+        Collection<Product> productsOnList = list.getProducts();
+        for (Product p : products) {
+            if (!productsOnList.contains(p)) {
+                productsOnList.add(p);
+            }
+        }
+        list.setProducts(productsOnList);
         List save = listRepository.save(list);
         return createListResponse(save);
     }
